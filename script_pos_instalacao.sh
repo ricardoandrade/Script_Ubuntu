@@ -41,7 +41,7 @@ sudo apt-get install app-install-data-medibuntu apport-hooks-medibuntu
 # Globus //TODO
 # Nautilus elementary
 
-echo "Instalando o temas..."
+echo "Instalando o tema do macbuntu..."
 wget http://gnaag.k2city.eu/nautilus-breadcrumbs-hack.tar.gz
 tar -xvf nautilus-breadcrumbs-hack.tar.gz
 
@@ -66,6 +66,7 @@ sudo aptitude install vlc non-free-codecs libdvdcss2 faac faad ffmpeg ffmpeg2the
 # Skype
 # JDownloader
 
+echo "Instalando os aplicativos de internet...."
 sudo apt-get install skype chromium-browser jdownloader
 
 #################################################################
@@ -75,6 +76,7 @@ sudo apt-get install skype chromium-browser jdownloader
 # Eclipse //TODO
 # Java 6
 # Github //TODO
+# Ruby
 
 echo "Instalando aplicativos para programacao..."
 sudo apt-get install eclipse sun-java6-plugin sun-java6-jdk sun-java6-fonts sun-java6-bin
@@ -86,9 +88,10 @@ sudo apt-get install eclipse sun-java6-plugin sun-java6-jdk sun-java6-fonts sun-
 # Latex
 # Kile
 # Texmaker
+# Kbibtex
 
 echo "Instalando programas para texto..."
-sudo apt-get install kile-i18n-ptbr texmaker pdflatex bibtex
+sudo apt-get install kile-i18n-ptbr texmaker pdflatex bibtex kbibtex
 
 #################################################################
 # 			Utilitários				#
