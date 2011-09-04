@@ -1,0 +1,201 @@
+#!/bin/sh
+#########################################################################
+#									#
+#	Script de firewall						#
+#	Autor: Ricardo Felipe L. de Andrade				#
+#	Distribuição: Ubuntu 11.04					#
+#	Versão: 1.0							#		
+#	Licença: GPL							#	
+#	Observações: 							#
+#	Adicione o arquivo no diretório: /etc/init.d/			#
+#	Dê permissão de escrita: chmod +x /etc/init.d/rc.firewall	#
+#									#
+#									#
+#########################################################################
+
+# Ativa módulos
+# -------------------------------------------------------
+/sbin/modprobe iptable_nat
+/sbin/modprobe ip_conntrack
+/sbin/modprobe ip_conntrack_ftp
+/sbin/modprobe ip_nat_ftp
+/sbin/modprobe ipt_LOG
+/sbin/modprobe ipt_REJECT
+/sbin/modprobe ipt_MASQUERADE
+echo "Modulos carregados ..... [ ok ]"
+
+# Ativa roteamento no kernel
+# -------------------------------------------------------
+echo "1" > /proc/sys/net/ipv4/ip_forward
+echo "Ativa roteamento no kernel ..... [ ok ]"
+
+# Limpando as tabelas e Chains
+# -------------------------------------------------------
+iptables -F
+iptables -F -t nat
+iptables -F INPUT
+iptables -F OUTPUT
+iptables -F FORWARD
+iptables -t mangle -F
+iptables -t nat -F
+iptables -X
+echo "Limpeza das Tabelas ..... [ ok ]"
+
+# Determina a política padrão 
+# -------------------------------------------------------
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP 
+
+#################################################
+# Tabela FILTER
+#################################################
+
+# Proteção contra IP spoofing
+# -------------------------------------------------------
+echo "1" > /proc/sys/net/ipv4/conf/all/rp_filter 
+iptables -A INPUT -m state --state INVALID -j DROP
+echo "Proteção contra IP spoofing ..... [ ok ]"
+
+# Dropa pacotes TCP indesejáveis
+# -------------------------------------------------------
+iptables -A FORWARD -p tcp ! --syn -m state --state NEW -j LOG --log-level 6 --log-prefix "FIREWALL: NEW sem syn: " 
+iptables -A FORWARD -p tcp ! --syn -m state --state NEW -j DROP 
+echo "Dropa pacotes TCP indesejáveis .... [ ok ]"
+
+# Dropa pacotes mal formados
+# -------------------------------------------------------
+iptables -A INPUT -m unclean -j LOG --log-level 6 --log-prefix "FIREWALL: pacote mal form: " 
+iptables -A INPUT -m unclean -j DROP 
+echo "Dropa pacotes mal formados .... [ ok ]" 
+
+# Aceita os pacotes que realmente devem entrar
+# -------------------------------------------------------
+iptables -A INPUT -j ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -m state --state ESTABLISHED,RELATED,NEW -j ACCEPT
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED,NEW -j ACCEPT
+echo "Aceita os pacotes que realmente devem entrar .... [ ok ]"
+
+# Proteção contra trinoo 
+# -------------------------------------------------------
+iptables -N TRINOO
+iptables -A TRINOO -m limit --limit 15/m -j LOG --log-level 6 --log-prefix "FIREWALL: trinoo: " 
+iptables -A TRINOO -j DROP 
+iptables -A INPUT -p TCP --dport 27444 -j TRINOO
+iptables -A INPUT -p TCP --dport 27665 -j TRINOO
+iptables -A INPUT -p TCP --dport 31335 -j TRINOO
+iptables -A INPUT -p TCP --dport 34555 -j TRINOO
+iptables -A INPUT -p TCP --dport 35555 -j TRINOO
+echo "Proteção contra trinoo .... [ ok ]"
+
+# Proteção contra tronjans 
+# -------------------------------------------------------
+iptables -N TROJAN
+iptables -A TROJAN -m limit --limit 15/m -j LOG --log-level 6 --log-prefix "FIREWALL: trojan: " 
+iptables -A TROJAN -j DROP 
+iptables -A INPUT -p TCP --dport 666 -j TROJAN
+iptables -A INPUT -p TCP --dport 666 -j TROJAN
+iptables -A INPUT -p TCP --dport 4000 -j TROJAN
+iptables -A INPUT -p TCP --dport 6000 -j TROJAN
+iptables -A INPUT -p TCP --dport 6006 -j TROJAN
+iptables -A INPUT -p TCP --dport 16660 -j TROJAN
+echo "Proteção contra tronjans .... [ ok ]"
+
+# Proteção contra worms
+# -------------------------------------------------------
+iptables -A FORWARD -p tcp --dport 135  -j REJECT
+iptables -I FORWARD -p tcp --dport 135 -j LOG --log-level info --log-prefix 'WORMS REDE>'
+iptables -A FORWARD -p tcp --dport 135 -j DROP
+iptables -I INPUT -p tcp --dport 135 -j LOG --log-level info --log-prefix 'WORMS >'
+iptables -A INPUT -p tcp --dport 135 -j DROP
+
+echo "Proteção contra worms .... [ ok ]"
+
+# Proteção contra syn-flood
+# -------------------------------------------------------
+echo "1" > /proc/sys/net/ipv4/tcp_syncookies
+iptables -A FORWARD -p tcp --syn -m limit --limit 2/s -j ACCEPT
+echo "Proteção contra syn-flood .... [ ok ]"
+
+# Proteção contra ping da morte
+# -------------------------------------------------------
+iptables -A FORWARD -p icmp --icmp-type echo-request -m limit --limit 1/s -j ACCEPT
+echo "Proteção contra ping da morte .... [ ok ]"
+
+# Não responde a pings
+# -------------------------------------------------------
+#iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+# echo "Não responde a pings .... [ ok ]"
+
+# Impedindo ataque de Denial Of Service Dos na rede e servidor
+# -------------------------------------------------------
+iptables -I FORWARD -p tcp -m limit --limit 1/s -j ACCEPT
+iptables -A INPUT -p tcp -m limit --limit 1/s -j ACCEPT
+echo "Impedindo ataque de Denial Of Service Dos na rede e servidor .... [ ok ]"
+
+# Proteção contra port scanners
+# -------------------------------------------------------
+iptables -N SCANNER 
+iptables -A SCANNER -m limit --limit 15/m -j LOG --log-level 6 --log-prefix "FIREWALL: port scanner: " 
+iptables -A SCANNER -j DROP 
+iptables -A INPUT -p tcp --tcp-flags ALL FIN,URG,PSH -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags ALL NONE -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags ALL ALL -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags ALL FIN,SYN -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j SCANNER 
+iptables -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j SCANNER 
+echo "Proteção contra port scanners .... [ ok ]"
+
+# Loga tentativa de acesso a determinadas portas
+# -------------------------------------------------------
+iptables -A INPUT -p tcp --dport 21 -j LOG --log-level 6 --log-prefix "FIREWALL: ftp: "
+iptables -A INPUT -p tcp --dport 23 -j LOG --log-level 6 --log-prefix "FIREWALL: telnet: "
+iptables -A INPUT -p tcp --dport 25 -j LOG --log-level 6 --log-prefix "FIREWALL: smtp: "
+iptables -A INPUT -p tcp --dport 80 -j LOG --log-level 6 --log-prefix "FIREWALL: http: "
+iptables -A INPUT -p tcp --dport 110 -j LOG --log-level 6 --log-prefix "FIREWALL: pop3: "
+iptables -A INPUT -p udp --dport 111 -j LOG --log-level 6 --log-prefix "FIREWALL: rpc: "
+iptables -A INPUT -p tcp --dport 113 -j LOG --log-level 6 --log-prefix "FIREWALL: identd: "
+iptables -A INPUT -p tcp --dport 137:139 -j LOG --log-level 6 --log-prefix "FIREWALL: samba: "
+iptables -A INPUT -p udp --dport 137:139 -j LOG --log-level 6 --log-prefix "FIREWALL: samba: "
+iptables -A INPUT -p tcp --dport 161:162 -j LOG --log-level 6 --log-prefix "FIREWALL: snmp: "
+iptables -A INPUT -p tcp --dport 6667:6668 -j LOG --log-level 6 --log-prefix "FIREWALL: irc: "
+iptables -A INPUT -p tcp --dport 3128 -j LOG --log-level 6 --log-prefix "FIREWALL: squid: "
+echo "Loga tentativa de acesso a determinadas portas .... [ ok ]"
+
+# Libera acesso externo a determinadas portas
+# -------------------------------------------------------
+#iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+#echo "Libera acesso externo a determinadas portas .... [ ok ]"
+
+# Libera acesso de smtp para fora apenas para o IP XXX.XXX.XXX.XXX
+# -------------------------------------------------------
+#iptables -A FORWARD -p tcp -d ! XXX.XXX.XXX.XXX --dport 25 -j LOG --log-level 6 --log-prefix "FIREWALL: SMTP proibido: "
+#iptables -A FORWARD -p tcp -d ! XXX.XXX.XXX.XXX --dport 25 -j REJECT
+
+
+#################################################
+# Tabela NAT
+#################################################
+
+
+# Ativa mascaramento de saída
+# -------------------------------------------------------
+iptables -A POSTROUTING -t nat -j MASQUERADE
+echo "Ativa mascaramento de saída ... [ ok ]"
+
+# Proxy transparente
+# -------------------------------------------------------
+#iptables -t nat -A PREROUTING  -p tcp --dport 80 -j REDIRECT --to-port 3128
+#iptables -t nat -A PREROUTING  -p tcp --dport 8080 -j REDIRECT --to-port 3128
+
+
+# Redireciona portas para outros servidores
+# -------------------------------------------------------
+#iptables -t nat -A PREROUTING -d 192.168.200.1 -p tcp --dport 22 -j DNAT --to-destination 10.0.0.1
+
+
+# Redireciona portas na própria máquina
+# -------------------------------------------------------
+#iptables -A PREROUTING -t nat -d 192.168.200.1 -p tcp --dport 5922 -j REDIRECT --to-ports 22
