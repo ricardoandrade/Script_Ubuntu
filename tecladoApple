@@ -1,0 +1,15 @@
+#!/bin/bash
+#################################################################
+#								#
+#	Script para utilização do teclado com o padrão us	#
+#	Autor: Ricardo Felipe L. de Andrade			#
+#	Distribuição: Ubuntu 11.04				#
+#	Versão: 1.0						#	
+#	Licença: GPL						#
+#	Observações:						#
+#	   copiar o arquivo para /usr/bin e bin			#
+#	   caso queira utilizar o programa ao iniciar o linux	#
+#          adicione a linha de execução do programa no 		#
+#          /etc/init.d/rc.local					#	#								#	##################################################################
+
+setxkbmap -model pc104 -layout us_intl -variant basic

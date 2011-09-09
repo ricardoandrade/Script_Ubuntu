@@ -125,8 +125,8 @@ echo "Proteção contra ping da morte .... [ ok ]"
 
 # Não responde a pings
 # -------------------------------------------------------
-#iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
-# echo "Não responde a pings .... [ ok ]"
+iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+ echo "Não responde a pings .... [ ok ]"
 
 # Impedindo ataque de Denial Of Service Dos na rede e servidor
 # -------------------------------------------------------
