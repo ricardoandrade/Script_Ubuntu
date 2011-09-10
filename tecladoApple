@@ -12,4 +12,8 @@
 #          adicione a linha de execução do programa no 		#
 #          /etc/init.d/rc.local					#	#								#	##################################################################
 
+
 setxkbmap -model pc104 -layout us_intl -variant basic
+
+#https://help.ubuntu.com/community/AppleKeyboard#Ubuntu_11.4_.28Natty_Narwhal.29
+echo 2 | sudo tee /sys/module/hid_apple/parameters/fnmode
