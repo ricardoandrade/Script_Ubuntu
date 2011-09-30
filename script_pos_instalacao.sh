@@ -39,8 +39,11 @@ sudo apt-get install app-install-data-medibuntu apport-hooks-medibuntu
 # Globus //TODO
 # Nautilus elementary
 
-echo "Instalando o tema do macbuntu..."
-wget http://gnaag.k2city.eu/nautilus-breadcrumbs-hack.tar.gz
+echo "Instalando o tema do macbuntu..." 
+wget http://downloads.sourceforge.net/project/macbuntu/macbuntu-10.10/v2.3/Macbuntu-10.10.tar.gz -O /tmp/Macbuntu-10.10.tar.gz && tar xzvf /tmp/Macbuntu-10.10.tar.gz -C /tmp && cd /tmp/Macbuntu-10.10/ && ./install.sh
+
+echo "Instalando o tema para o nautilus"
+cd && wget http://gnaag.k2city.eu/nautilus-breadcrumbs-hack.tar.gz
 tar -xvf nautilus-breadcrumbs-hack.tar.gz
 
 #################################################################
