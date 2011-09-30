@@ -19,6 +19,7 @@ echo "Adicionando os repositórios...."
 cd 
 sudo add-apt-repository ppa:am-monkeyd/nautilus-elementary-ppa
 sudo add-apt-repository ppa:jd-team/jdownloader
+sudo add-apt-repository ppa:mozillateam/firefox-stable
 
 echo "Atualizando o repositório geral..."
 
@@ -66,9 +67,10 @@ sudo aptitude install vlc non-free-codecs libdvdcss2 faac faad ffmpeg ffmpeg2the
 # Google Chrome
 # Skype
 # JDownloader
+# Firefox
 
 echo "Instalando os aplicativos de internet...."
-sudo apt-get install skype chromium-browser jdownloader
+sudo apt-get install skype chromium-browser jdownloader firefox
 
 #################################################################
 # 			Programação				#
