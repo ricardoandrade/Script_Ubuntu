@@ -93,7 +93,7 @@ sudo apt-get install eclipse sun-java6-plugin sun-java6-jdk sun-java6-fonts sun-
 # Kbibtex
 
 echo "Instalando programas para texto..."
-sudo apt-get install kile-i18n-ptbr texmaker pdflatex bibtex kbibtex
+sudo apt-get install aspell-pt-br kile-i18n-ptbr texmaker pdflatex bibtex kbibtex
 
 #################################################################
 # 			Utilitários				#
