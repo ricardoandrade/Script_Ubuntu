@@ -20,6 +20,7 @@ cd
 sudo add-apt-repository ppa:am-monkeyd/nautilus-elementary-ppa
 sudo add-apt-repository ppa:jd-team/jdownloader
 sudo add-apt-repository ppa:mozillateam/firefox-stable
+sudo add-apt-repository ppa:indicator-multiload/daily
 
 echo "Atualizando o repositório geral..."
 
@@ -110,7 +111,7 @@ sudo apt-get install kile-i18n-ptbr texmaker pdflatex bibtex kbibtex
 # Nevernote //TODO
 
 echo "Instalando os utilitários do sistema...."
-sudo apt-get install guake gnome-do unrar nautilus-image-converter desktopnova desktopnova-module-gnome desktopnova-tray xpad
+sudo apt-get install indicator-multiload guake gnome-do unrar nautilus-image-converter desktopnova desktopnova-module-gnome desktopnova-tray xpad
 
 echo "Fechando os aplicativos..."
 
