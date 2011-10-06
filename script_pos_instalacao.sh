@@ -18,9 +18,11 @@ echo "Adicionando os repositórios...."
 
 cd 
 sudo add-apt-repository ppa:am-monkeyd/nautilus-elementary-ppa
-sudo add-apt-repository ppa:jd-team/jdownloader
-sudo add-apt-repository ppa:mozillateam/firefox-stable
 sudo add-apt-repository ppa:indicator-multiload/daily
+sudo add-apt-repository ppa:elementary-os/daily
+sudo add-apt-repository ppa:tiheum/equinox
+
+
 
 echo "Atualizando o repositório geral..."
 
@@ -43,10 +45,6 @@ sudo apt-get install app-install-data-medibuntu apport-hooks-medibuntu
 
 echo "Instalando o tema do macbuntu..." 
 wget http://downloads.sourceforge.net/project/macbuntu/macbuntu-10.10/v2.3/Macbuntu-10.10.tar.gz -O /tmp/Macbuntu-10.10.tar.gz && tar xzvf /tmp/Macbuntu-10.10.tar.gz -C /tmp && cd /tmp/Macbuntu-10.10/ && ./install.sh
-
-echo "Instalando o tema para o nautilus"
-cd && wget http://gnaag.k2city.eu/nautilus-breadcrumbs-hack.tar.gz
-tar -xvf nautilus-breadcrumbs-hack.tar.gz
 
 #################################################################
 # 			Vídeo					#
@@ -111,7 +109,7 @@ sudo apt-get install kile-i18n-ptbr texmaker pdflatex bibtex kbibtex
 # Nevernote //TODO
 
 echo "Instalando os utilitários do sistema...."
-sudo apt-get install indicator-multiload guake gnome-do unrar nautilus-image-converter desktopnova desktopnova-module-gnome desktopnova-tray xpad
+sudo apt-get install gtk2-engines-equinox equinox-theme marlin indicator-multiload guake gnome-do unrar nautilus-image-converter desktopnova desktopnova-module-gnome desktopnova-tray xpad
 
 echo "Fechando os aplicativos..."
 
